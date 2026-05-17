@@ -14,7 +14,8 @@ link() {
     echo "linked $dst → $src"
 }
 
-link "$DOTFILES_DIR/claude/commands"     "$HOME/.claude/commands"
+link "$DOTFILES_DIR/claude/commands"      "$HOME/.claude/commands"
 link "$DOTFILES_DIR/claude/settings.json" "$HOME/.claude/settings.json"
+link "$DOTFILES_DIR/claude/CLAUDE.md"     "$HOME/.claude/CLAUDE.md"
 
 echo "done"
