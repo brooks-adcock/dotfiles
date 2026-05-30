@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-PROJECT_NAME="${1:-$(basename "$PWD")}"
+PROJECT_NAME="$(basename "$PWD")"
 TEMPLATES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CREATED=()
 SKIPPED=()
@@ -24,7 +24,41 @@ for component in ui api db; do
     touch "$component/code/.gitkeep"
 
     if [ ! -f "$component/Dockerfile" ]; then
-        touch "$component/Dockerfile"
+        case "$component" in
+            ui)
+                cat > "$component/Dockerfile" << 'EOF'
+# TODO: replace with your chosen base image (e.g. node:20-alpine)
+# FROM node:20-alpine
+# WORKDIR /app
+# COPY code/package*.json ./
+# RUN npm ci --production
+# COPY code/ .
+# RUN npm run build
+# EXPOSE 3000
+# CMD ["npm", "start"]
+EOF
+                ;;
+            api)
+                cat > "$component/Dockerfile" << 'EOF'
+# TODO: replace with your chosen base image (e.g. python:3.12-slim, node:20-alpine)
+# FROM python:3.12-slim
+# WORKDIR /app
+# COPY code/requirements.txt .
+# RUN pip install --no-cache-dir -r requirements.txt
+# COPY code/ .
+# EXPOSE 8000
+# CMD ["python", "main.py"]
+EOF
+                ;;
+            db)
+                cat > "$component/Dockerfile" << 'EOF'
+# TODO: replace with your chosen base image (e.g. postgres:16-alpine, mysql:8)
+# FROM postgres:16-alpine
+# COPY init/ /docker-entrypoint-initdb.d/
+# EXPOSE 5432
+EOF
+                ;;
+        esac
         stamp "$component/Dockerfile"
     else
         skip "$component/Dockerfile"
@@ -33,7 +67,28 @@ done
 
 for component in ui api; do
     if [ ! -f "$component/Dockerfile.dev" ]; then
-        touch "$component/Dockerfile.dev"
+        case "$component" in
+            ui)
+                cat > "$component/Dockerfile.dev" << 'EOF'
+# TODO: replace with your chosen base image (e.g. node:20-alpine)
+# FROM node:20-alpine
+# WORKDIR /app
+# COPY code/package*.json ./
+# RUN npm install
+# CMD ["npm", "run", "dev"]
+EOF
+                ;;
+            api)
+                cat > "$component/Dockerfile.dev" << 'EOF'
+# TODO: replace with your chosen base image (e.g. python:3.12-slim, node:20-alpine)
+# FROM python:3.12-slim
+# WORKDIR /app
+# COPY code/requirements.txt .
+# RUN pip install -r requirements.txt
+# CMD ["python", "-m", "uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+EOF
+                ;;
+        esac
         stamp "$component/Dockerfile.dev"
     else
         skip "$component/Dockerfile.dev"
@@ -114,8 +169,9 @@ for script in dev_build dev_start dev_stop dev_tail dev_bork; do
 done
 
 # ── Docs ──────────────────────────────────────────────────────────────────────
-if [ ! -d docs ]; then
-    mkdir docs
+mkdir -p docs
+
+if [ ! -f docs/architecture.md ]; then
     cat > docs/architecture.md << EOF
 # Architecture — $PROJECT_NAME
 
@@ -123,19 +179,77 @@ if [ ! -d docs ]; then
 
 ## Directory Structure
 
+\`\`\`
+ui/        — frontend
+api/       — backend
+db/        — database
+docs/      — project documentation for AI agents
+changes/   — in-flight change contracts
+\`\`\`
+
 ## Tech Stack
+
+| Layer | Technology | Why |
+|-------|-----------|-----|
+| UI    | TODO      |     |
+| API   | TODO      |     |
+| DB    | TODO      |     |
 
 ## Data Model
 
 ## Key Flows
 
-## How to Run
+## How to Run (dev)
+
+\`\`\`bash
+./dev_build.sh   # build images
+./dev_start.sh   # start containers (detached)
+./dev_tail.sh    # follow logs
+./dev_stop.sh    # stop containers
+./dev_bork.sh    # nuclear reset
+\`\`\`
+
+## How to Build (production)
+
+\`\`\`bash
+docker compose -f docker-compose.yml build
+\`\`\`
+
+## Direct Database Access
+
+\`\`\`bash
+# TODO: add psql / sqlite3 / mysql command once DB is configured
+\`\`\`
 EOF
+    stamp "docs/architecture.md"
+else
+    skip "docs/architecture.md"
+fi
+
+if [ ! -f docs/decisions.md ]; then
     cat > docs/decisions.md << EOF
 # Decisions — $PROJECT_NAME
 
 Newest entries at the top.
+
+<!-- Entry format:
+## YYYY-MM-DD — [Short title]
+
+**Context:** What situation prompted this decision
+**Options considered:**
+- Option A — tradeoffs
+- Option B — tradeoffs
+**Decision:** What was chosen and why
+**What didn't work:** Specific failures, error messages, dead ends
+**Consequences:** What follows from this decision
+-->
 EOF
+    stamp "docs/decisions.md"
+else
+    skip "docs/decisions.md"
+fi
+
+if [ ! -f docs/status.md ]; then
     cat > docs/status.md << EOF
 # Status — $PROJECT_NAME
 
@@ -149,9 +263,58 @@ EOF
 
 ## Not Doing
 EOF
-    stamp "docs/"
+    stamp "docs/status.md"
 else
-    skip "docs/"
+    skip "docs/status.md"
+fi
+
+if [ ! -f docs/prd.md ]; then
+    cat > docs/prd.md << EOF
+# PRD — $PROJECT_NAME
+
+> Run \`/prd\` to fill this in through a guided conversation.
+
+## Problem Statement
+
+## Goals
+
+## Non-Goals
+
+## Users
+
+## Constraints
+
+## Edge Cases
+
+## Open Questions
+
+## Dependencies
+
+## Risks
+EOF
+    stamp "docs/prd.md"
+else
+    skip "docs/prd.md"
+fi
+
+if [ ! -f docs/plan.md ]; then
+    cat > docs/plan.md << EOF
+# Plan — $PROJECT_NAME
+
+> Run \`/groom\` (after completing the PRD) to generate this through a guided conversation.
+> Each step will follow this format:
+>
+> ## Step N — [Name]
+> **What:** One sentence describing the change.
+> **Why:** How this step serves the PRD goals.
+> **Files:** Exhaustive list of every file created or modified — full paths from project root.
+> **Test criteria:** Specific, checkable conditions that confirm this step is complete.
+> **Depends on:** Step numbers this must follow, or — if none.
+> **Status:** 🔲
+EOF
+    stamp "docs/plan.md"
+else
+    skip "docs/plan.md"
 fi
 
 # ── Changes dir ───────────────────────────────────────────────────────────────
