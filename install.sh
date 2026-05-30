@@ -38,6 +38,7 @@ link() {
 
 link "$DOTFILES_DIR/claude/commands"        "$HOME/.claude/commands"
 link "$DOTFILES_DIR/claude/skills"          "$HOME/.claude/skills"
+link "$DOTFILES_DIR/claude/templates"       "$HOME/.claude/templates"
 link "$DOTFILES_DIR/claude/settings.json"   "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/preferences.md"  "$HOME/.claude/preferences.md"
 # CLAUDE.md is written per-machine — not symlinked
