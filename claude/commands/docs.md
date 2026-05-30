@@ -55,12 +55,12 @@ Follow these principles — the audience is an AI agent, not a human reader:
 
 ## Process
 
-1. **Read the current docs** — read all files in `./docs/` to understand what's already documented.
+1. **Read the current docs** — read all files in `./docs/` to understand what's already documented. Run each as a separate Bash call (never chain with &&). If `plan.md` or `prd.md` exist, read those too.
 2. **Check recent git history** — run `git log --oneline -20` and `git diff HEAD~1 --stat` (or more if needed) to see what changed recently.
 3. **Scan the codebase** — check directory structure, key config files, and any new or modified source files.
 4. **Update each doc file:**
    - `architecture.md` — make it match current reality. Remove anything that's no longer true. Add anything new.
    - `decisions.md` — add new entries for any decisions made since last update. Don't modify old entries unless they're factually wrong.
-   - `status.md` — move completed items to Done, update In Progress, reprioritize Next based on current state.
+   - `status.md` — move completed items to Done, update In Progress, reprioritize Next based on current state. If `plan.md` exists, derive "In Progress" and "Next" from it — the next 🔲 step is "In Progress", subsequent 🔲 steps are "Next". If a `## Build Log` section already exists, preserve every existing entry exactly and only append entries for steps that aren't already recorded. If no `## Build Log` section exists yet, append one summarizing completed steps from `plan.md`.
 5. **Don't over-document** — if something is obvious from the code, don't explain it. Focus on the WHY, the gotchas, and the things that would waste an agent's time to rediscover.
 6. **Remove stale content** — outdated docs are worse than no docs. If something changed, update or delete the old version.
