@@ -20,7 +20,7 @@ if [ -L "$HOME/.claude/CLAUDE.md" ] && \
     echo "  3. Add this line at the bottom:  @~/.claude/preferences.md"
     echo "  4. Re-run install.sh"
     echo ""
-    echo "See ~/dotfiles/claude/machines/work.md for an example."
+    echo "See the README for an example CLAUDE.md."
     echo ""
     exit 1
 fi
