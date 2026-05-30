@@ -2,13 +2,20 @@ Commit the current work with updated documentation and clean gitignore files.
 
 ## Step 1: Update documentation
 
-Run the `/docs` skill first — update `./docs/architecture.md`, `./docs/decisions.md`, and `./docs/status.md` to reflect what was done in this session. Follow all the guidelines in that skill.
+Detect which workflow is active:
+
+1. Run `git branch --show-current` to get the branch name
+2. Check if `changes/<branch_name>/` exists
+
+**If `changes/<branch_name>/` exists** — run the `/change_docs` skill to update the change contract, decision log, testing plan, and notes before committing.
+
+**Otherwise** — run the `/docs` skill to update `./docs/architecture.md`, `./docs/decisions.md`, and `./docs/status.md`. If `docs/plan.md` exists, `/docs` will derive "In Progress" and "Next" from it — no separate plan update needed.
 
 ## Step 2: Audit .gitignore files
 
 Check that nothing sensitive or generated will be committed:
 
-1. Read the root `.gitignore` and `ui/.gitignore`
+1. Run `find . -name ".gitignore" | grep -v node_modules | grep -v .git` and read each file found
 2. Run `git status` to see what's untracked/modified
 3. Look for anything that should NOT be committed:
    - `.env` files, credentials, secrets, API keys
