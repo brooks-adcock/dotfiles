@@ -1,4 +1,4 @@
-Wrap up an in-flight change: run tests, commit with updated docs, and open a pull request.
+Wrap up an in-flight change: run tests, validate the touch list, commit with updated docs, and open a pull request.
 
 ---
 
@@ -12,13 +12,30 @@ Run the `/test` skill.
 
 ---
 
-## Phase 2 — Commit
+## Phase 2 — Validate touch list
+
+Run:
+```
+python3 changes/system/validate_touch_list.py
+```
+
+**If exit code 1 (undeclared files):** stop. Show the output. Tell the user: "These files were changed but are not in the touch_list. Either update the touch_list via /change_docs or revert the unintended changes."
+
+**If exit code 2 (setup error):** stop. Show the output and ask the user to resolve it.
+
+**WARN lines are informational** — declared files not yet touched are fine (they may be deferred or deleted). Do not block on warnings.
+
+**If exit code 0:** proceed to Phase 3.
+
+---
+
+## Phase 3 — Commit
 
 Run the `/commit` skill. It will detect the `changes/<branch_name>/` directory and call `/change_docs` automatically before staging and committing.
 
 ---
 
-## Phase 3 — Open a pull request
+## Phase 4 — Open a pull request
 
 1. Run `git branch --show-current` to confirm the branch
 2. Run `git push -u origin <branch_name>` to push if not already pushed

@@ -60,6 +60,7 @@ All docs files live in `docs/`. They are checked individually — re-running the
 | Path | Purpose |
 |------|---------|
 | `CLAUDE.md` | Project context loaded by Claude at the start of every session |
+| `changes/system/validate_touch_list.py` | Deterministic touchlist validator — run by `/change_wrap` before commit |
 | `changes/` | In-flight change contracts (one subdirectory per branch, created by `/change`) |
 | `.gitignore` | Standard ignores: `.env`, `node_modules/`, `__pycache__/`, etc. |
 

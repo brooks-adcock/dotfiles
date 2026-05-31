@@ -318,12 +318,18 @@ else
 fi
 
 # ── Changes dir ───────────────────────────────────────────────────────────────
-if [ ! -d changes ]; then
-    mkdir changes
+mkdir -p changes changes/system
+
+if [ ! -f changes/.gitkeep ]; then
     touch changes/.gitkeep
-    stamp "changes/"
+fi
+
+if [ ! -f changes/system/validate_touch_list.py ]; then
+    cp "$TEMPLATES_DIR/validate_touch_list.py" changes/system/validate_touch_list.py
+    chmod +x changes/system/validate_touch_list.py
+    stamp "changes/system/validate_touch_list.py"
 else
-    skip "changes/"
+    skip "changes/system/validate_touch_list.py"
 fi
 
 # ── CLAUDE.md ─────────────────────────────────────────────────────────────────
