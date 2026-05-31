@@ -53,7 +53,7 @@ Each entry:
    - `testing_plan.md` — add rows for new tests written or identified; mark written tests ✓
    - `notes.md` — rewrite "What's done" and "What's next" to reflect current state; append to "Gotchas" if anything new surfaced
 
-5. **Validate touch_list** — if `./changes/system/validate_touch_list.py` exists, run it and fix any mismatches before finishing.
+5. **Validate touch_list** — run `python3 ~/.claude/templates/validate_touch_list.py` and fix any mismatches before finishing.
 
 ## Writing Guidelines
 

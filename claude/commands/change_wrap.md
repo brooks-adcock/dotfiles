@@ -16,7 +16,7 @@ Run the `/test` skill.
 
 Run:
 ```
-python3 changes/system/validate_touch_list.py
+python3 ~/.claude/templates/validate_touch_list.py
 ```
 
 **If exit code 1 (undeclared files):** stop. Show the output. Tell the user: "These files were changed but are not in the touch_list. Either update the touch_list via /change_docs or revert the unintended changes."
