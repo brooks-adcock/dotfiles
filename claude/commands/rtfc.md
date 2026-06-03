@@ -1,5 +1,9 @@
 Read the change contract for the current in-flight change before doing anything else.
 
+> **Which context loader to use?**
+> - `/rtfc` — branch-scoped changes tracked in `./changes/<branch>/` (hotfixes, isolated changes)
+> - `/rtfm` — project-level feature work using the `prd` → `groom` → `build` pipeline
+
 ## Instructions
 
 1. Run `git branch --show-current` to get the current branch name. The change directory is `changes/<branch_name>/`.

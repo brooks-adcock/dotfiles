@@ -20,7 +20,7 @@ if [ -L "$HOME/.claude/CLAUDE.md" ] && \
     echo "  3. Add this line at the bottom:  @~/.claude/preferences.md"
     echo "  4. Re-run install.sh"
     echo ""
-    echo "See ~/dotfiles/claude/machines/work.md for an example."
+    echo "See the README for an example CLAUDE.md."
     echo ""
     exit 1
 fi
@@ -38,6 +38,7 @@ link() {
 
 link "$DOTFILES_DIR/claude/commands"        "$HOME/.claude/commands"
 link "$DOTFILES_DIR/claude/skills"          "$HOME/.claude/skills"
+link "$DOTFILES_DIR/claude/templates"       "$HOME/.claude/templates"
 link "$DOTFILES_DIR/claude/settings.json"   "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/preferences.md"  "$HOME/.claude/preferences.md"
 # CLAUDE.md is written per-machine — not symlinked
