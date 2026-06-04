@@ -1,0 +1,4 @@
+# Self-referential symlinks created when ./claude is installed back into itself
+claude/commands/commands
+claude/skills/skills
+claude/templates/templates
