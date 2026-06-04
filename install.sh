@@ -43,4 +43,11 @@ link "$DOTFILES_DIR/claude/settings.json"   "$HOME/.claude/settings.json"
 link "$DOTFILES_DIR/claude/preferences.md"  "$HOME/.claude/preferences.md"
 # CLAUDE.md is written per-machine — not symlinked
 
+# Source tracked shell aliases from ~/.zshrc (idempotent).
+SOURCE_LINE="[[ -f \"$DOTFILES_DIR/shell/aliases.zsh\" ]] && source \"$DOTFILES_DIR/shell/aliases.zsh\""
+if ! grep -qF "$DOTFILES_DIR/shell/aliases.zsh" "$HOME/.zshrc" 2>/dev/null; then
+    echo "$SOURCE_LINE" >> "$HOME/.zshrc"
+    echo "added aliases source line to ~/.zshrc"
+fi
+
 echo "done"
