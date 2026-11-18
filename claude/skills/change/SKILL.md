@@ -1,6 +1,6 @@
 ---
 name: change
-description: Initialize a new change with proper branch hierarchy, change directory, and contract. Use when the user says "start change", "start a change", "new change", "begin change", or "init change" followed by a topic name.
+description: Initialize a new change with a change branch, change directory, and contract. Use when the user says "start change", "start a change", "new change", "begin change", or "init change" followed by a topic name.
 allowed-tools: Bash, Read, Write
 argument-hint: <topic>
 user-invocable: true
@@ -8,7 +8,7 @@ user-invocable: true
 
 # Start Change Skill
 
-This skill initiates a new change by creating the proper branch hierarchy, change directory, and drafting the change contract.
+This skill initiates a new change by creating the change branch, change directory, and drafting the change contract.
 
 ## Trigger
 
@@ -34,52 +34,33 @@ This skill should be invoked AFTER discussing the change. The discussion should 
 ## Branch Hierarchy
 
 ```
-develop
-  └── <developer>_<YY_MM_DD>_daily       (daily aggregation branch)
-        └── <developer>_<YY_MM_DD>_<topic>  (change branch)
+<base>
+  └── <YY_MM_DD>_<topic>
 ```
 
-Changes merge back to the daily branch. Daily branch merges to develop at end of day.
+`<base>` is `develop` when that branch exists. The change branch merges to `<base>`. Do not create a daily branch. Do not put a person's name on the branch.
 
 ## Instructions
 
 When triggered, follow these steps exactly:
 
-### Step 1: Get Developer Name
-
-```bash
-git config user.name
-```
-
-Sanitize for branch name:
-- Replace spaces with underscores
-- Convert to lowercase
-- Remove special characters
-
-Example: "Brooks Adcock" → "brooks_adcock"
-
-If git config returns empty, ask the user:
-> "I couldn't determine your developer name from git config. What name should I use for branch naming? (e.g., 'brooks')"
-
-### Step 2: Generate Date
+### Step 1: Generate Date
 
 Get today's date in `YY_MM_DD` format.
 
 Example: January 23, 2026 → "26_01_23"
 
-### Step 3: Build Names
+### Step 2: Build Names
 
 ```
-developer = "brooks"           # from Step 1
-date = "26_01_23"              # from Step 2  
+date = "26_01_23"              # from Step 1
 topic = "auth_fix"             # from user input / $ARGUMENTS
 
-daily_branch = "brooks_26_01_23_daily"
-change_branch = "brooks_26_01_23_auth_fix"
-change_dir = "./changes/brooks_26_01_23_auth_fix"
+change_branch = "26_01_23_auth_fix"
+change_dir = "./changes/26_01_23_auth_fix"
 ```
 
-### Step 4: Check for Dirty State
+### Step 3: Check for Dirty State
 
 ```bash
 git status --porcelain
@@ -100,35 +81,18 @@ If there is output (uncommitted changes), STOP and report:
 
 Do NOT proceed until the working directory is clean.
 
-### Step 5: Ensure Daily Branch Exists
-
-Check if daily branch exists:
-
-```bash
-git show-ref --verify --quiet refs/heads/<daily_branch>
-echo $?  # 0 = exists, 1 = doesn't exist
-```
-
-**If daily branch does NOT exist:**
+### Step 4: Update the Base Branch
 
 ```bash
 git checkout develop
 git pull origin develop
-git checkout -b <daily_branch>
 ```
 
-Report: "Created daily branch: `<daily_branch>`"
+If `develop` does not exist, ask which base branch to use, then checkout and pull that branch.
 
-**If daily branch already exists:**
+Report: "Branching from `<base>` at `<short sha>`."
 
-```bash
-git checkout <daily_branch>
-git pull origin <daily_branch> 2>/dev/null || true
-```
-
-Report: "Switched to existing daily branch: `<daily_branch>`"
-
-### Step 6: Check if Change Branch Already Exists
+### Step 5: Check if Change Branch Already Exists
 
 ```bash
 git show-ref --verify --quiet refs/heads/<change_branch>
@@ -153,7 +117,7 @@ git checkout -b <change_branch>
 
 Report: "Created change branch: `<change_branch>`"
 
-### Step 7: Check if Change Directory Already Exists
+### Step 6: Check if Change Directory Already Exists
 
 ```bash
 ls -d <change_dir> 2>/dev/null
@@ -175,7 +139,7 @@ ls -d <change_dir> 2>/dev/null
 mkdir -p <change_dir>
 ```
 
-### Step 8: Create Change Documents
+### Step 7: Create Change Documents
 
 Check if project templates exist at `./changes/system/templates/`. If they do, copy from there. Otherwise write the files directly using the content below.
 
@@ -275,7 +239,7 @@ Also create an empty **`notes.md`**.
 
 Pre-populate `decision_log.md` Context and any Decisions Made from the discussion.
 
-### Step 9: Report and Prompt for Review
+### Step 8: Report and Prompt for Review
 
 Display a summary:
 
@@ -283,7 +247,7 @@ Display a summary:
 >
 > - Branch: `<change_branch>`
 > - Directory: `<change_dir>`
-> - Daily branch: `<daily_branch>`
+> - Base: `<base>`
 >
 > **Files created:**
 > - `change_contract.json` - Review and complete the touch_list
@@ -303,7 +267,6 @@ Read the `change_contract.json` file so it appears in context for review.
 | Error | Response |
 |-------|----------|
 | Not in a git repository | "Error: Not in a git repository. Navigate to the project root and try again." |
-| Cannot determine developer name | Ask user to provide it |
 | develop branch doesn't exist | "Error: 'develop' branch not found. What base branch should I use?" |
 | Permission denied | "Error: Permission denied. Check file/directory permissions." |
 | Network error on pull | Warn but continue (offline work is fine) |
